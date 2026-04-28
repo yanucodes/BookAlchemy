@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Column, Integer, String, Date
+from sqlalchemy import Column, Integer, String, Date, ForeignKey
 
 db = SQLAlchemy()
 
@@ -23,10 +23,12 @@ class Book(db.Model):
     isbn = Column(String)
     title = Column(String)
     publication_year = Column(Integer)
+    author_id = Column(Integer, ForeignKey('author.author_id'), nullable=False)
 
     def __repr__(self):
         return (f"Book(id={self.book_id}, isbn='{self.isbn}', title="
-                f"'{self.title}', publication_year={self.publication_year})")
+                f"'{self.title}', publication_year={self.publication_year}, "
+                f"author_id={self.author_id})")
 
     def __str__(self):
         return f"{self.title}"
