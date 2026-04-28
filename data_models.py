@@ -10,9 +10,23 @@ class Author(db.Model):
     birth_date = Column(Date)
     date_of_death = Column(Date)
 
+    def __repr__(self):
+        return (f"Author(id={self.author_id}, name='{self.name}', birth_date=" 
+                f"{self.birth_date}, date_of_death={self.date_of_death})")
+
+    def __str__(self):
+        return f"{self.name}"
+
 
 class Book(db.Model):
     book_id = Column(Integer, primary_key=True, autoincrement=True)
     isbn = Column(String)
     title = Column(String)
     publication_year = Column(Integer)
+
+    def __repr__(self):
+        return (f"Book(id={self.book_id}, isbn='{self.isbn}' title="
+                f"'{self.title}', publication_year={self.publication_year})")
+
+    def __str__(self):
+        return f"{self.title}"
