@@ -9,3 +9,10 @@ class Author(db.Model):
     name = Column(String)
     birth_date = Column(Date)
     date_of_death = Column(Date)
+
+
+class Book(db.Model):
+    book_id = Column(Integer, primary_key=True, autoincrement=True)
+    isbn = Column(String)
+    title = Column(String)
+    publication_year = Column(Integer)
