@@ -5,6 +5,7 @@ db = SQLAlchemy()
 
 
 class Author(db.Model):
+    __tablename__ = "authors"
     author_id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String)
     birth_date = Column(Date)
@@ -19,11 +20,13 @@ class Author(db.Model):
 
 
 class Book(db.Model):
+    __tablename__ = "books"
     book_id = Column(Integer, primary_key=True, autoincrement=True)
     isbn = Column(String)
     title = Column(String)
     publication_year = Column(Integer)
-    author_id = Column(Integer, ForeignKey('author.author_id'), nullable=False)
+    author_id = Column(Integer, ForeignKey('authors.author_id'),
+                       nullable=False)
 
     def __repr__(self):
         return (f"Book(id={self.book_id}, isbn='{self.isbn}', title="
