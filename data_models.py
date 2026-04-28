@@ -25,7 +25,7 @@ class Book(db.Model):
     publication_year = Column(Integer)
 
     def __repr__(self):
-        return (f"Book(id={self.book_id}, isbn='{self.isbn}' title="
+        return (f"Book(id={self.book_id}, isbn='{self.isbn}', title="
                 f"'{self.title}', publication_year={self.publication_year})")
 
     def __str__(self):
