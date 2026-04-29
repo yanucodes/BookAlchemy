@@ -12,6 +12,7 @@ db.init_app(app)
 
 @app.route('/add_author', methods=['GET', 'POST'])
 def add_author():
+    print_success_message = False
     if request.method == 'POST':
         name = request.form['name']
         birth_date = date.fromisoformat(request.form['birthdate'])
@@ -22,8 +23,8 @@ def add_author():
                             date_of_death=date_of_death)
         db.session.add(new_author)
         db.session.commit()
-
-    return render_template('add_author.html')
+        print_success_message = True
+    return render_template('add_author.html', print_success_message = print_success_message)
 
 
 @app.route('/')
