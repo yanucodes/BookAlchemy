@@ -1,7 +1,7 @@
 import os
 from datetime import date
 from flask import Flask, render_template, request
-from data_models import db, Author
+from data_models import db, Author, Book
 
 app = Flask(__name__)
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -25,6 +25,27 @@ def add_author():
         db.session.commit()
         print_success_message = True
     return render_template('add_author.html', print_success_message = print_success_message)
+
+
+@app.route('/add_book', methods=['GET', 'POST'])
+def add_book():
+    print_success_message = False
+    if request.method == 'POST':
+        isbn = request.form['isbn']
+        title = request.form['title']
+        publication_year = int(request.form['publication_year'])
+        author_id = int(request.form['author_id'])
+        new_book = Book(isbn=isbn, title=title,
+                        publication_year=publication_year, author_id=author_id)
+        db.session.add(new_book)
+        db.session.commit()
+        print_success_message = True
+    authors = Author.query.order_by(Author.name).all()
+    print(authors)
+    return render_template('add_book.html',
+                           print_success_message = print_success_message,
+                           current_year=date.today().year,
+                           authors=authors)
 
 
 @app.route('/')

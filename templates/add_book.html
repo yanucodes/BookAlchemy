@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  </head>
+  <body>
+  {% if print_success_message %}
+  <h1>New book has successfully been added to the database.</h1>
+      <a href="{{ url_for('welcome') }}">Go back</a>
+  {% else %}
+  <form action="/add_book" method="POST">
+  <label for="isbn">ISBN:</label>
+  <input type="text" id="isbn" name="isbn"><br><br>
+  <label for="title">Title:</label>
+  <input type="text" id="title" name="title" required><br><br>
+  <label for="publication_year">Publication Year:</label>
+  <select id="publication_year" name="publication_year" required>
+      {% for year in range(current_year, 1449, -1) %}
+          <option value="{{ year }}">{{ year }}</option>
+      {% endfor %}
+  </select><br><br>
+  <label for="author_id">Author:</label>
+  <select id="author_id" name="author_id" required>
+      {% for author in authors %}
+          <option value="{{ author.author_id }}">{{ author.name }}</option>
+      {% endfor %}
+  </select>
+  <input type="submit" value="Add book">
+  </form>
+  {% endif %}
+  </body>
+</html>
