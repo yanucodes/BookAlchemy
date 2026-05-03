@@ -8,7 +8,7 @@
   <body>
   {% if print_success_message %}
   <h1>New author has successfully been added to the database.</h1>
-      <a href="{{ url_for('welcome') }}">Go back</a>
+      <a href="{{ url_for('home_page') }}">Go back</a>
   {% else %}
   <form action="/add_author" method="POST">
   <label for="name">Author Name:</label> 
