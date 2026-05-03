@@ -20,5 +20,9 @@ h1 {
 }
 
 .book h3 {
-    margin-top: 0;
+    margin: 0 0 4px;
+}
+
+.book p {
+    margin: 0;
 }
