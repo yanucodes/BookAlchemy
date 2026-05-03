@@ -1,6 +1,6 @@
 import os
 from datetime import date
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 from data_models import db, Author, Book
 
 app = Flask(__name__)
@@ -8,6 +8,14 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 db_path = os.path.join(basedir, 'data', 'library.sqlite')
 app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{db_path}"
 db.init_app(app)
+
+
+@app.route('/delete_book/<int:book_id>', methods=['POST'])
+def delete_book(book_id):
+    book = Book.query.get_or_404(book_id)
+    db.session.delete(book)
+    db.session.commit()
+    return redirect(url_for('home_page'))
 
 
 @app.route('/add_author', methods=['GET', 'POST'])
