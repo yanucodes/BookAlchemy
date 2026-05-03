@@ -49,8 +49,9 @@ def add_book():
 
 
 @app.route('/')
-def welcome():  # put application's code here
-    return 'Welcome to my library!'
+def home_page():
+    books = Book.query.order_by(Book.title).all()
+    return render_template('home.html', books=books)
 
 
 if __name__ == '__main__':
