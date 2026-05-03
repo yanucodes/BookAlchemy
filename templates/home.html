@@ -14,6 +14,11 @@
         <div>
             <h3>{{ book.title }}</h3>
             <p>by {{ book.author }}</p>
+            {% if book.isbn %}
+                <img src="https://covers.openlibrary.org/b/isbn/{{ book.isbn }}-M.jpg?default=false"
+                     onerror="this.style.display='none'"
+                     alt="{{ book.title }} cover">
+            {% endif %}
         </div>
     </div>
     {% endfor %}
