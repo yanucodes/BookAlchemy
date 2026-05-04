@@ -1,59 +1,197 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: #F5F5F5;
-    padding: 20px;
-    color: #333;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        "Helvetica Neue", Arial, sans-serif;
+    background-color: #eef6f0;
+    padding: 32px 20px;
+    color: #1f2a26;
+    max-width: 880px;
+    margin: 0 auto;
+    line-height: 1.5;
 }
 
 h1 {
     text-align: center;
-    color: #4F4F4F;
+    color: #1f2a26;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin: 0 0 28px;
+}
+
+h2 {
+    color: #2f4a3e;
+    font-weight: 600;
+    margin: 24px 10px 12px;
+}
+
+a {
+    color: #2f7a5a;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
 }
 
 .book {
-    background-color: #FFF;
-    border: 1px solid #DDD;
-    padding: 20px;
-    margin-bottom: 20px;
-    border-radius: 8px;
+    background-color: #ffffff;
+    border: 1px solid #d6e6dc;
+    padding: 20px 22px;
+    margin-bottom: 16px;
+    border-radius: 10px;
     position: relative;
+    box-shadow: 0 1px 2px rgba(30, 60, 45, 0.04);
+    transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.book:hover {
+    box-shadow: 0 4px 14px rgba(30, 60, 45, 0.08);
 }
 
 .book h3 {
     margin: 0 0 4px;
+    font-size: 1.15rem;
+    color: #1f2a26;
+}
+
+.book h2 {
+    margin: 0;
 }
 
 .book p {
-    margin: 0px 0px 10px;
+    margin: 0 0 12px;
+    color: #5a6a63;
+}
+
+.book img {
+    display: block;
+    max-width: 110px;
+    height: auto;
+    border-radius: 4px;
+    margin-top: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
 }
 
 .hint {
     font-size: 0.9em;
-    color: #555;
-    margin-top: 0.7em;
+    color: #5a6a63;
+    margin-top: 0.9em;
 }
 
-.button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
+.button,
+button,
+input[type="submit"] {
     display: inline-block;
     box-sizing: border-box;
-    border: 1px solid #DDD;
-    border-radius: 5px;
-    padding: 5px 5px;
-    background-color: #EEE;
-    margin-bottom: 2px;
-    margin-top: 2px;
-    text-align: center;
-    text-decoration: none;
-    color: #333;
+    border: 1px solid #c8dccf;
+    border-radius: 6px;
+    padding: 7px 14px;
+    background-color: #ffffff;
+    color: #1f2a26;
     font: inherit;
-    font-size: 0.85em;
+    font-size: 0.9em;
     cursor: pointer;
+    transition: background-color 0.12s ease, border-color 0.12s ease;
+}
+
+.button:hover,
+button:hover,
+input[type="submit"]:hover {
+    background-color: #e3efe6;
+    border-color: #8fb8a0;
+}
+
+.book .button {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    font-size: 0.82em;
+    padding: 5px 10px;
+    color: #8a3a2e;
+    border-color: #ecd9d4;
+    background-color: #fbf4f2;
+}
+
+.book .button:hover {
+    background-color: #f5e2dc;
+    border-color: #d8a99e;
 }
 
 .toolbar {
-    margin-left: 10px;
-    margin-bottom: 20px;
+    margin: 0 0 14px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+.toolbar form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+select,
+input[type="text"],
+input[type="date"] {
+    border: 1px solid #c8dccf;
+    border-radius: 6px;
+    padding: 7px 10px;
+    background-color: #ffffff;
+    font: inherit;
+    font-size: 0.95em;
+    color: #1f2a26;
+}
+
+select:focus,
+input:focus {
+    outline: none;
+    border-color: #4a9a78;
+    box-shadow: 0 0 0 3px rgba(74, 154, 120, 0.18);
+}
+
+form label {
+    display: inline-block;
+    color: #2f4a3e;
+    font-size: 0.95em;
+    margin-right: 4px;
+}
+
+/* Add author / add book forms (top-level form, not inside a card) */
+body > form {
+    background-color: #ffffff;
+    border: 1px solid #d6e6dc;
+    border-radius: 10px;
+    padding: 24px 26px;
+    max-width: 440px;
+    margin: 0 auto;
+    box-shadow: 0 1px 2px rgba(30, 60, 45, 0.04);
+}
+
+body > form label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+
+body > form input[type="text"],
+body > form input[type="date"],
+body > form select {
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 4px;
+}
+
+body > form input[type="submit"] {
+    margin-top: 12px;
+    background-color: #2f7a5a;
+    color: #f4fbf6;
+    border-color: #2f7a5a;
+    padding: 9px 18px;
+    font-weight: 500;
+}
+
+body > form input[type="submit"]:hover {
+    background-color: #246148;
+    border-color: #246148;
 }
