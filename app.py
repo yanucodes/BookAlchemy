@@ -21,7 +21,17 @@ def delete_book(book_id):
 
 @app.route('/add_author', methods=['GET', 'POST'])
 def add_author():
-    print_success_message = False
+    """
+    Show the form to add a new author and handle submission.
+
+    On GET: render the empty form.
+    On POST: add author to the database and render the page in success state,
+    exposing new_author_id for the template to optionally link to add_book.
+
+    Returns:
+        Rendered add_author.html template.
+    """
+    author_added = False
     new_author_id = None
     if request.method == 'POST':
         name = request.form['name']
@@ -34,9 +44,10 @@ def add_author():
         db.session.add(new_author)
         db.session.commit()
         new_author_id = new_author.author_id
-        print_success_message = True
-    return render_template('add_author.html', print_success_message =
-    print_success_message, new_author_id=new_author_id)
+        author_added = True
+    return render_template('add_author.html',
+                           author_added=author_added,
+                           new_author_id=new_author_id)
 
 
 @app.route('/add_book', methods=['GET', 'POST'])

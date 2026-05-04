@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   </head>
   <body>
-  {% if print_success_message %}
+  {% if author_added %}
   <h1>New author has successfully been added to the database.</h1>
       <a href="{{ url_for('home_page') }}">Go back</a>
       <a href="{{ url_for('add_book', author_id=new_author_id) }}">Add book by this author</a>
