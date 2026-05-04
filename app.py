@@ -31,8 +31,10 @@ def add_author():
                             date_of_death=date_of_death)
         db.session.add(new_author)
         db.session.commit()
+        new_author_id = new_author.author_id
         print_success_message = True
-    return render_template('add_author.html', print_success_message = print_success_message)
+    return render_template('add_author.html', print_success_message =
+    print_success_message, new_author_id=new_author_id)
 
 
 @app.route('/add_book', methods=['GET', 'POST'])
@@ -49,11 +51,12 @@ def add_book():
         db.session.commit()
         print_success_message = True
     authors = Author.query.order_by(Author.name).all()
-    print(authors)
+    preselected_author_id = request.args.get('author_id', type=int)
     return render_template('add_book.html',
                            print_success_message = print_success_message,
                            current_year=date.today().year,
-                           authors=authors)
+                           authors=authors,
+                           preselected_author_id=preselected_author_id)
 
 
 @app.route('/')

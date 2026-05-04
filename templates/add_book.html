@@ -24,7 +24,9 @@
   <label for="author_id">Author:</label>
   <select id="author_id" name="author_id" required>
       {% for author in authors %}
-          <option value="{{ author.author_id }}">{{ author.name }}</option>
+          <option value="{{ author.author_id }}" {% if author.author_id == preselected_author_id %}selected{% endif %}>
+              {{ author.name }}
+          </option>
       {% endfor %}
   </select>
   <input type="submit" value="Add book">
