@@ -21,6 +21,7 @@ def delete_book(book_id):
 @app.route('/add_author', methods=['GET', 'POST'])
 def add_author():
     print_success_message = False
+    new_author_id = None
     if request.method == 'POST':
         name = request.form['name']
         birth_date = date.fromisoformat(request.form['birthdate'])
