@@ -1,6 +1,7 @@
 import os
 from datetime import date
 from flask import Flask, render_template, request, redirect, url_for
+from sqlalchemy import or_
 from data_models import db, Author, Book
 
 app = Flask(__name__)
@@ -59,6 +60,21 @@ def add_book():
                            authors=authors,
                            preselected_author_id=preselected_author_id)
 
+
+@app.route('/books/search')
+def search_book():
+    keyword = request.args.get('keyword', False)
+    if not keyword:
+        return redirect(url_for('home_page'))
+    pattern = f"%{keyword}%"
+    query = Book.query.join(Author).filter(
+        or_(
+            Book.title.ilike(pattern),
+            Author.name.ilike(pattern)
+        )
+    )
+    books = query.all()
+    return render_template('home.html', books=books)
 
 @app.route('/')
 def home_page():

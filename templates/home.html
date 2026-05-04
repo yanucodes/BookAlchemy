@@ -13,7 +13,7 @@
         <h3 style="margin-bottom: 0;"><a href="{{ url_for('add_book') }}">Add
             new book</a></h2>
     </div>
-    <div class="sort-bar">
+    <div class="toolbar">
         <form method="GET" action="{{ url_for('home_page') }}">
             <label for="sort">Sort by: </label>
             <select id="sort" name="sort" onchange="this.form.submit()">
@@ -25,6 +25,13 @@
                 <option value="asc" {% if order == 'asc' %}selected{% endif %}> Ascending</option>
                 <option value="desc" {% if order == 'desc' %}selected{% endif %}> Descending</option>
             </select>
+        </form>
+    </div>
+    <div class="toolbar">
+        <form method="GET" action="{{ url_for('search_book') }}">
+            <label for="keyword"></label>
+            <input type="text" id="keyword" name="keyword" required>
+            <input type="submit" value="search">
         </form>
     </div>
     {% for book in books %}
