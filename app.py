@@ -82,40 +82,63 @@ def add_book():
                            preselected_author_id=preselected_author_id)
 
 
-@app.route('/books/search')
-def search_book():
-    keyword = request.args.get('keyword', False)
-    if not keyword:
-        return redirect(url_for('home_page'))
-    pattern = f"%{keyword}%"
-    query = Book.query.join(Author).filter(
-        or_(
-            Book.title.ilike(pattern),
-            Author.name.ilike(pattern)
-        )
-    )
-    books = query.all()
-    return render_template('home.html', books=books)
+def sort_books(query, sort: str = 'title', descending: bool = False):
+    """
+    Sort books preselected by query according to the sorting column.
 
-@app.route('/')
-def home_page():
-    sort = request.args.get('sort', 'title')
-    order = request.args.get('order', 'asc')
+    Args:
+        query: a Book query to sort
+        sort: sorting column
+        descending: if true, sort books in descending order
 
+    Returns:
+        Query with books sorted.
+    """
     sort_columns = {
         'title': Book.title,
         'author': Author.name,
         'year': Book.publication_year,
     }
-    sort_column = sort_columns.get(sort, Book.title)
-    sort_column = sort_column.desc() if order == 'desc' else sort_column.asc()
-
-    query = Book.query
     if sort == 'author':
         query = query.join(Author)
+    sort_column = sort_columns.get(sort, Book.title)
+    sort_column = sort_column.desc() if descending else sort_column.asc()
+    return query.order_by(sort_column)
 
-    books = query.order_by(sort_column).all()
-    return render_template('home.html', books=books, sort=sort, order=order)
+
+def filter_books_by_keyword(query, keyword):
+    """
+    Filter books by keyword presence in the title or in the author's name.
+
+    Args:
+        query: a Book query to filter
+        keyword: keyword to search for
+
+    Returns:
+        Filtered query containing only books with the keyword in either
+        title or a name.
+    """
+    pattern = f"%{keyword}%"
+    return query.filter(
+        or_(
+            Book.title.ilike(pattern),
+            Book.author.has(Author.name.ilike(pattern))
+        )
+    )
+
+
+@app.route('/')
+def home_page():
+    sort = request.args.get('sort', 'title')
+    order = request.args.get('order', 'asc')
+    keyword = request.args.get('keyword', '')
+    query = Book.query
+    if keyword:
+        query = filter_books_by_keyword(query, keyword)
+    query = sort_books(query, sort=sort, descending=(order == 'desc'))
+    books = query.all()
+    return render_template('home.html', books=books, sort=sort, order=order,
+                           keyword=keyword)
 
 
 if __name__ == '__main__':
