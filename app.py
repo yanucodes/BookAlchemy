@@ -10,7 +10,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{db_path}"
 db.init_app(app)
 
 
-@app.route('/delete_book/<int:book_id>', methods=['POST'])
+@app.route('/book/<int:book_id>/delete', methods=['POST'])
 def delete_book(book_id):
     book = Book.query.get_or_404(book_id)
     db.session.delete(book)
