@@ -1,3 +1,4 @@
+"""Setup script to create a database if it does not exist."""
 import os
 from app import app, db_path
 from data_models import db

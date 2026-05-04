@@ -1,3 +1,5 @@
+"""Web application for displaying books in the database, adding new books,
+or deleting old ones."""
 import os
 from datetime import date
 from flask import Flask, render_template, request, redirect, url_for
@@ -13,6 +15,15 @@ db.init_app(app)
 
 @app.route('/book/<int:book_id>/delete', methods=['POST'])
 def delete_book(book_id):
+    """
+    Delete the book with the given ID from the database.
+
+    Args:
+        book_id: ID of the book to delete.
+
+    Returns:
+        Redirect to the home page.
+    """
     book = Book.query.get_or_404(book_id)
     db.session.delete(book)
     db.session.commit()
@@ -25,7 +36,8 @@ def add_author():
     Show the form to add a new author and handle submission.
 
     On GET: render the empty form.
-    On POST: add author to the database and render the page in success state,
+    On POST: add the author to the database and render the page in success
+    state,
     exposing new_author_id for the template to optionally link to add_book.
 
     Returns:
@@ -38,7 +50,7 @@ def add_author():
         birth_date = date.fromisoformat(request.form['birthdate'])
         date_of_death_input = request.form['date_of_death']
         date_of_death = (date.fromisoformat(date_of_death_input) if
-            date_of_death_input else None)
+                         date_of_death_input else None)
         new_author = Author(name=name, birth_date=birth_date,
                             date_of_death=date_of_death)
         db.session.add(new_author)
@@ -55,8 +67,8 @@ def add_book():
     """
     Show the form to add a new book and handle submission.
 
-    On GET: render the empty form, if author_id is passed, preselect this
-    author in dropdown author field.
+    On GET: render the empty form. If author_id is passed, preselect that
+    author in the author dropdown.
     On POST: add book to the database and render the page in success state.
 
     Returns:
@@ -84,15 +96,15 @@ def add_book():
 
 def sort_books(query, sort: str = 'title', descending: bool = False):
     """
-    Sort books preselected by query according to the sorting column.
+    Sort the books in the given query by the selected column.
 
     Args:
-        query: a Book query to sort
-        sort: sorting column
-        descending: if true, sort books in descending order
+        query: a Book query to sort.
+        sort: sorting column.
+        descending: if true, sort books in descending order.
 
     Returns:
-        Query with books sorted.
+        Query with books sorted by the selected column.
     """
     sort_columns = {
         'title': Book.title,
@@ -111,12 +123,12 @@ def filter_books_by_keyword(query, keyword):
     Filter books by keyword presence in the title or in the author's name.
 
     Args:
-        query: a Book query to filter
-        keyword: keyword to search for
+        query: a Book query to filter.
+        keyword: keyword to search for.
 
     Returns:
-        Filtered query containing only books with the keyword in either
-        title or a name.
+        Filtered query containing only books with the keyword in either the
+        title or the author's name.
     """
     pattern = f"%{keyword}%"
     return query.filter(
@@ -129,13 +141,20 @@ def filter_books_by_keyword(query, keyword):
 
 @app.route('/')
 def home_page():
+    """
+    Render the home page with a list of books in the database.
+
+    Returns:
+        Rendered home.html template with books sorted and filtered according
+        to the passed parameters.
+    """
     sort = request.args.get('sort', 'title')
     order = request.args.get('order', 'asc')
     keyword = request.args.get('keyword', '')
     query = Book.query
     if keyword:
         query = filter_books_by_keyword(query, keyword)
-    query = sort_books(query, sort=sort, descending=(order == 'desc'))
+    query = sort_books(query, sort=sort, descending=order == 'desc')
     books = query.all()
     return render_template('home.html', books=books, sort=sort, order=order,
                            keyword=keyword)
