@@ -62,8 +62,23 @@ def add_book():
 
 @app.route('/')
 def home_page():
-    books = Book.query.order_by(Book.title).all()
-    return render_template('home.html', books=books)
+    sort = request.args.get('sort', 'title')
+    order = request.args.get('order', 'asc')
+
+    sort_columns = {
+        'title': Book.title,
+        'author': Author.name,
+        'year': Book.publication_year,
+    }
+    sort_column = sort_columns.get(sort, Book.title)
+    sort_column = sort_column.desc() if order == 'desc' else sort_column.asc()
+
+    query = Book.query
+    if sort == 'author':
+        query = query.join(Author)
+
+    books = query.order_by(sort_column).all()
+    return render_template('home.html', books=books, sort=sort, order=order)
 
 
 if __name__ == '__main__':

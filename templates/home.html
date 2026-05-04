@@ -13,6 +13,20 @@
         <h3 style="margin-bottom: 0;"><a href="{{ url_for('add_book') }}">Add
             new book</a></h2>
     </div>
+    <div class="sort-bar">
+        <form method="GET" action="{{ url_for('home_page') }}">
+            <label for="sort">Sort by: </label>
+            <select id="sort" name="sort" onchange="this.form.submit()">
+                <option value="title" {% if sort == 'title' %}selected{% endif %}>Title</option>
+                <option value="author" {% if sort == 'author' %}selected{% endif %}>Author</option>
+                <option value="year" {% if sort == 'year' %}selected{% endif %}>Year</option>
+            </select>
+            <select id="order" name="order" onchange="this.form.submit()">
+                <option value="asc" {% if order == 'asc' %}selected{% endif %}> Ascending</option>
+                <option value="desc" {% if order == 'desc' %}selected{% endif %}> Descending</option>
+            </select>
+        </form>
+    </div>
     {% for book in books %}
     <div class="book">
         <div>

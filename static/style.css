@@ -52,3 +52,8 @@ h1 {
     font-size: 0.85em;
     cursor: pointer;
 }
+
+.toolbar {
+    margin-left: 10px;
+    margin-bottom: 20px;
+}
