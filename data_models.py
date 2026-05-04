@@ -20,7 +20,7 @@ class Author(db.Model):
     """
     __tablename__ = "authors"
     author_id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String)
+    name = Column(String, nullable=False)
     birth_date = Column(Date)
     date_of_death = Column(Date)
 
@@ -48,7 +48,7 @@ class Book(db.Model):
     __tablename__ = "books"
     book_id = Column(Integer, primary_key=True, autoincrement=True)
     isbn = Column(String)
-    title = Column(String)
+    title = Column(String, nullable=False)
     publication_year = Column(Integer)
     author_id = Column(Integer, ForeignKey('authors.author_id'),
                        nullable=False)
