@@ -34,6 +34,12 @@
             <input type="submit" value="search">
         </form>
     </div>
+    {% if keyword %}
+        <h2 style="margin-left: 10px;">Search results for keyword: <em>{{
+                keyword }}</em></h2>
+    {% endif %}
+    {% if not books %}<h2 style="margin-left: 10px;">Nothing found.</h2>{%
+            endif %}
     {% for book in books %}
     <div class="book">
         <div>
