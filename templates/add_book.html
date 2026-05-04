@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   </head>
   <body>
-  {% if print_success_message %}
+  {% if book_added %}
   <h1>New book has successfully been added to the database.</h1>
       <a href="{{ url_for('home_page') }}">Go back</a>
   {% else %}

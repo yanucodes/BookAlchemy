@@ -52,7 +52,17 @@ def add_author():
 
 @app.route('/add_book', methods=['GET', 'POST'])
 def add_book():
-    print_success_message = False
+    """
+    Show the form to add a new book and handle submission.
+
+    On GET: render the empty form, if author_id is passed, preselect this
+    author in dropdown author field.
+    On POST: add book to the database and render the page in success state.
+
+    Returns:
+        Rendered add_book.html template.
+    """
+    book_added = False
     if request.method == 'POST':
         isbn = request.form['isbn']
         title = request.form['title']
@@ -62,11 +72,11 @@ def add_book():
                         publication_year=publication_year, author_id=author_id)
         db.session.add(new_book)
         db.session.commit()
-        print_success_message = True
+        book_added = True
     authors = Author.query.order_by(Author.name).all()
     preselected_author_id = request.args.get('author_id', type=int)
     return render_template('add_book.html',
-                           print_success_message = print_success_message,
+                           book_added=book_added,
                            current_year=date.today().year,
                            authors=authors,
                            preselected_author_id=preselected_author_id)
