@@ -26,3 +26,9 @@ h1 {
 .book p {
     margin: 0;
 }
+
+.hint {
+    font-size: 0.9em;
+    color: #555;
+    margin-top: 0.7em;
+}
