@@ -30,7 +30,7 @@
     </div>
     <div class="toolbar">
         <form method="GET" action="{{ url_for('home_page') }}">
-            <input type="text" id="keyword" name="keyword" required>
+            <input type="text" id="keyword" name="keyword" value="{{ keyword }}">
             <input type="hidden" name="sort" value="{{ sort }}">
             <input type="hidden" name="order" value="{{ order }}">
             <input type="submit" value="search">
