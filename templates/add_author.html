@@ -7,6 +7,10 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   </head>
   <body>
+  <div class="toolbar" style="max-width: 494px; margin: 0 auto 14px;">
+      <a href="{{ url_for('home_page') }}" class="button">Home</a>
+      <a href="{{ url_for('add_book') }}" class="button">Add book</a>
+  </div>
   {% if author_added %}
   <h1>New author has successfully been added to the database.</h1>
       <a href="{{ url_for('home_page') }}">Go back</a>

@@ -9,10 +9,17 @@
   </head>
   <body>
     <h1>Welcome to My Library!</h1>
-    <div class="book">
-        <h2 style="margin-bottom: 0;"><a href="{{ url_for('add_book') }}">Add
-            new book</a></h2>
+    <div class="toolbar">
+        <a href="{{ url_for('add_book') }}" class="button">Add new book</a>
+        <a href="{{ url_for('add_author') }}" class="button">Add new author</a>
+        <form method="GET" action="{{ url_for('home_page') }}">
+            <input type="text" id="keyword" name="keyword" value="{{ keyword }}">
+            <input type="hidden" name="sort" value="{{ sort }}">
+            <input type="hidden" name="order" value="{{ order }}">
+            <input type="submit" value="search">
+        </form>
     </div>
+    {% if books %}
     <div class="toolbar">
         <form method="GET" action="{{ url_for('home_page') }}">
             <label for="sort">Sort by: </label>
@@ -28,14 +35,7 @@
             <input type="hidden" name="keyword" value="{{ keyword }}">
         </form>
     </div>
-    <div class="toolbar">
-        <form method="GET" action="{{ url_for('home_page') }}">
-            <input type="text" id="keyword" name="keyword" value="{{ keyword }}">
-            <input type="hidden" name="sort" value="{{ sort }}">
-            <input type="hidden" name="order" value="{{ order }}">
-            <input type="submit" value="search">
-        </form>
-    </div>
+    {% endif %}
     {% if keyword %}
         <h2 style="margin-left: 10px;">Search results for keyword: <em>{{
                 keyword }}</em></h2>
