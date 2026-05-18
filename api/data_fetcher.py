@@ -1,5 +1,5 @@
 """
-Connect to openlibrary API to fetch data about a book
+Connect to openlibrary API to fetch data about authors and books.
 """
 
 import logging
