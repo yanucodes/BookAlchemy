@@ -1,13 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Search & Add Author</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  </head>
-  <body>
+{% extends "base.html" %}
+
+{% block title %}Search & Add Author{% endblock %}
+
+{% block content %}
     <div class="toolbar">
         <a href="{{ url_for('home_page') }}" class="button">Home</a>
         <a href="{{ url_for('add_book') }}" class="button">Add book</a>
@@ -37,5 +32,4 @@
         </form>
     </div>
     {% endfor %}
-  </body>
-</html>
+{% endblock %}
