@@ -10,6 +10,7 @@ import requests
 logger = logging.getLogger(__name__)
 
 API_AUTHORS = "https://openlibrary.org/search/authors.json"
+API_BOOKS = "https://openlibrary.org/search.json"
 OPENLIBRARY_DATE_FORMAT = "%d %B %Y"
 
 
@@ -76,4 +77,32 @@ def fetch_authors(name: str) -> dict:
         new_author = {"name": author_name, "birth_date": birth_date,
                                 "date_of_death": date_of_death}
         output_data["authors"].append(new_author)
+    return output_data
+
+
+def fetch_book_by_isbn(isbn: str) -> dict:
+    """
+    Fetch information about a book with the ISBN ``isbn``.
+
+    Args:
+        isbn: ISBN of the book.
+
+    Returns:
+        Dictionary with the information about the search results.
+
+    Raises:
+        RequestException on API failure.
+        TypeError in case of an unexpected API response.
+    """
+    result = requests.get(API_BOOKS,
+                          params={"isbn": isbn},
+                          timeout=30)
+    result.raise_for_status()
+    output_data = result.json()
+    if not isinstance(output_data, dict):
+        raise TypeError("Unexpected API response: not a dict.")
+    book_docs = output_data.get("docs")
+    if not isinstance(book_docs, list):
+        raise TypeError("Unexpected API response: 'docs' is not found or is "
+                        "not a list.")
     return output_data
