@@ -73,6 +73,12 @@ def fetch_authors(name: str) -> dict:
             )
             continue
         birth_date = _parse_date(author.get("birth_date"))
+        if birth_date is None:
+            logger.warning(
+                "Skipping openlibrary author entry with missing or "
+                "unparseable birth date: %r", author
+            )
+            continue
         date_of_death = _parse_date(author.get("death_date"))
         new_author = {"name": author_name, "birth_date": birth_date,
                                 "date_of_death": date_of_death}
@@ -88,11 +94,15 @@ def fetch_book_by_isbn(isbn: str) -> dict:
         isbn: ISBN of the book.
 
     Returns:
-        Dictionary with the information about the search results.
+        Dictionary with the information about the search results and a list of
+        books under the ``books`` key. Each book is a dict with ``title``,
+        ``author_name`` and ``publication_year``.
 
     Raises:
         RequestException on API failure.
-        TypeError in case of an unexpected API response.
+        TypeError in case of an unexpected API response (response is not a
+        dict, ``docs`` is missing or not a list, or any entry in ``docs`` is
+        not a dict).
     """
     result = requests.get(API_BOOKS,
                           params={"isbn": isbn},
@@ -101,8 +111,42 @@ def fetch_book_by_isbn(isbn: str) -> dict:
     output_data = result.json()
     if not isinstance(output_data, dict):
         raise TypeError("Unexpected API response: not a dict.")
+    output_data["books"] = []
     book_docs = output_data.get("docs")
     if not isinstance(book_docs, list):
         raise TypeError("Unexpected API response: 'docs' is not found or is "
                         "not a list.")
+    if len(book_docs) > 0:
+        for book in book_docs:
+            if not isinstance(book, dict):
+                raise TypeError(
+                    "Unexpected API response: book entry in 'docs' is not "
+                    f"a dict: {book!r}"
+                )
+            title = book.get("title")
+            if not title:
+                logger.warning(
+                    "Skipping openlibrary book entry with no title: %r", book
+                )
+                continue
+            author_names = book.get("author_name") or []
+            author_name = author_names[0] if author_names else None
+            if not author_name:
+                logger.warning(
+                    "Skipping openlibrary book entry with no author: %r", book
+                )
+                continue
+            publication_year = book.get("first_publish_year")
+            if not isinstance(publication_year, int):
+                logger.warning(
+                    "Skipping openlibrary book entry with missing or "
+                    "non-integer publication year: %r", book
+                )
+                continue
+            new_book = {
+                "title": title,
+                "author_name": author_name,
+                "publication_year": publication_year,
+            }
+            output_data["books"].append(new_book)
     return output_data
