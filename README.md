@@ -42,12 +42,14 @@ python setup.py
 
 ## Routes
 
-| Method      | Path                      | Description                  |
-|-------------|---------------------------|------------------------------|
-| GET         | `/`                       | List all books               |
-| GET, POST   | `/add_author`             | Add new author               |
-| GET, POST   | `/add_book`               | Add new book                 |
-| POST        | `/book/<book_id>/delete`  | Delete a book                |
+| Method      | Path                     | Description                                                                            |
+|-------------|--------------------------|----------------------------------------------------------------------------------------|
+| GET         | `/`                      | List all books                                                                         |
+| GET, POST   | `/add_author`            | Add new author                                                                         |
+| GET, POST   | `/add_book`              | Add new book                                                                           |
+| GET, POST   | `/search_and_add_author` | Look up authors by name on OpenLibrary and import one into the library                 |
+| GET, POST   | `/search_and_add_book`   | Look up a book by ISBN on OpenLibrary and import it (with its author) into the library |
+| POST        | `/book/<book_id>/delete` | Delete a book                                                                          |
 
 The home page will display all books in your library. You can also add new book (if you don't find an author in the dropdown menu, add it with using the link in the form for adding a new book), delete existing books, search for a book with keyword. 
 
