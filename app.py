@@ -47,7 +47,7 @@ def add_author():
     author_added = False
     new_author_id = None
     if request.method == 'POST':
-        name = request.form['name']
+        name = request.form['name'].strip()
         birth_date = date.fromisoformat(request.form['birthdate'])
         date_of_death_input = request.form['date_of_death']
         date_of_death = (date.fromisoformat(date_of_death_input) if
@@ -164,8 +164,8 @@ def add_book():
     """
     book_added = False
     if request.method == 'POST':
-        isbn = request.form['isbn']
-        title = request.form['title']
+        isbn = request.form['isbn'].strip()
+        title = request.form['title'].strip()
         publication_year = int(request.form['publication_year'])
         author_id = int(request.form['author_id'])
         new_book = Book(isbn=isbn, title=title,
