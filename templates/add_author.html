@@ -17,8 +17,9 @@
       <a href="{{ url_for('add_book', author_id=new_author_id) }}">Add book by this author</a>
   {% else %}
   <form action="/add_author" method="POST">
-  <label for="name">Author Name:</label> 
-  <input type="text" id="name" name="name" required><br><br>
+  <label for="name">Author Name:</label>
+  <input type="text" id="name" name="name" required>
+  <button type="submit" formaction="{{ url_for('search_and_add_author') }}" formmethod="GET" formnovalidate>Search on OpenLibrary</button><br><br>
   <label for="birthdate">Birthdate:</label>
   <input type="date" id="birthdate" name="birthdate" required><br><br>
   <label for="date_of_death">Date of Death:</label> 

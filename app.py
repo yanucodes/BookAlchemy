@@ -5,6 +5,7 @@ from datetime import date
 from flask import Flask, render_template, request, redirect, url_for
 from sqlalchemy import or_
 from data_models import db, Author, Book
+from api import fetch_authors, fetch_book_by_isbn
 
 app = Flask(__name__)
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -60,6 +61,93 @@ def add_author():
     return render_template('add_author.html',
                            author_added=author_added,
                            new_author_id=new_author_id)
+
+
+@app.route('/search_and_add_author', methods=['GET', 'POST'])
+def search_and_add_author():
+    """
+    Search authors on openlibrary and add a selected one to the database.
+
+    On GET: if ``name`` query param is set, call ``fetch_authors`` and render
+    the matching authors with an "add author" button next to each.
+    On POST: add the author described in the form fields to the database, then
+    redirect back to the search results.
+
+    Returns:
+        Rendered search_and_add_author.html template (GET) or redirect (POST).
+    """
+    if request.method == 'POST':
+        name = request.form['name']
+        birth_date_input = request.form.get('birth_date', '')
+        date_of_death_input = request.form.get('date_of_death', '')
+        birth_date = (date.fromisoformat(birth_date_input)
+                      if birth_date_input else None)
+        date_of_death = (date.fromisoformat(date_of_death_input)
+                         if date_of_death_input else None)
+        if not Author.query.filter_by(name=name).first():
+            db.session.add(Author(name=name, birth_date=birth_date,
+                                  date_of_death=date_of_death))
+            db.session.commit()
+        return redirect(url_for('home_page'))
+    search_name = request.args.get('name', '')
+    authors = []
+    if search_name:
+        authors = fetch_authors(search_name).get('authors', [])
+    return render_template('search_and_add_author.html',
+                           search_name=search_name,
+                           authors=authors)
+
+
+@app.route('/search_and_add_book', methods=['GET', 'POST'])
+def search_and_add_book():
+    """
+    Search a book on openlibrary by ISBN and add it (and its author) to the
+    database.
+
+    On GET: if ``isbn`` query param is set, call ``fetch_book_by_isbn`` and
+    show the first match. If the book's author is already in the database,
+    show an "add book" form; otherwise show an "add author" form alongside
+    the book details and a hint to add the author first.
+    On POST: dispatch by hidden ``action`` field — ``add_author`` inserts the
+    author and redirects back to the same ISBN search; ``add_book`` inserts
+    the book and redirects to the home page.
+
+    Returns:
+        Rendered search_and_add_book.html template (GET) or redirect (POST).
+    """
+    if request.method == 'POST':
+        action = request.form.get('action')
+        if action == 'add_author':
+            name = request.form['name']
+            if not Author.query.filter_by(name=name).first():
+                db.session.add(Author(name=name))
+                db.session.commit()
+            return redirect(url_for('search_and_add_book',
+                                    isbn=request.form.get('search_isbn', '')))
+        if action == 'add_book':
+            isbn = request.form['isbn']
+            title = request.form['title']
+            publication_year = int(request.form['publication_year'])
+            author_id = int(request.form['author_id'])
+            if not Book.query.filter_by(isbn=isbn).first():
+                db.session.add(Book(isbn=isbn, title=title,
+                                    publication_year=publication_year,
+                                    author_id=author_id))
+                db.session.commit()
+            return redirect(url_for('home_page'))
+    search_isbn = request.args.get('isbn', '')
+    book = None
+    author_in_db = None
+    if search_isbn:
+        books = fetch_book_by_isbn(search_isbn).get('books') or []
+        if books:
+            book = {'isbn': search_isbn, **books[0]}
+            author_in_db = Author.query.filter_by(
+                name=book['author_name']).first()
+    return render_template('search_and_add_book.html',
+                           search_isbn=search_isbn,
+                           book=book,
+                           author_in_db=author_in_db)
 
 
 @app.route('/add_book', methods=['GET', 'POST'])

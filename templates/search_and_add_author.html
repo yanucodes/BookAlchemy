@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Search & Add Author</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body>
+    <div class="toolbar">
+        <a href="{{ url_for('home_page') }}" class="button">Home</a>
+        <a href="{{ url_for('add_book') }}" class="button">Add book</a>
+        <a href="{{ url_for('add_author') }}" class="button">Add author</a>
+    </div>
+    <h1>Search authors on OpenLibrary</h1>
+    <div class="toolbar">
+        <form method="GET" action="{{ url_for('search_and_add_author') }}">
+            <input type="text" name="name" value="{{ search_name }}" placeholder="Author name">
+            <input type="submit" value="Search">
+        </form>
+    </div>
+    {% if search_name and not authors %}
+        <h2 style="margin-left: 10px;">No authors found.</h2>
+    {% endif %}
+    {% for author in authors %}
+    <div class="book">
+        <p>
+            <strong>{{ author['name'] }}</strong>, born on {{ author['birth_date'] }}{% if author['date_of_death'] %}, died on {{ author['date_of_death'] }}{% endif %}.
+        </p>
+        <form action="{{ url_for('search_and_add_author') }}" method="POST">
+            <input type="hidden" name="name" value="{{ author['name'] }}">
+            <input type="hidden" name="birth_date" value="{{ author['birth_date'].isoformat() if author['birth_date'] else '' }}">
+            <input type="hidden" name="date_of_death" value="{{ author['date_of_death'].isoformat() if author['date_of_death'] else '' }}">
+            <input type="hidden" name="search_name" value="{{ search_name }}">
+            <button type="submit" class="button">Add author</button>
+        </form>
+    </div>
+    {% endfor %}
+  </body>
+</html>

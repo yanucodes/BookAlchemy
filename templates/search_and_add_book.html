@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Search & Add Book</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body>
+    <div class="toolbar">
+        <a href="{{ url_for('home_page') }}" class="button">Home</a>
+        <a href="{{ url_for('add_book') }}" class="button">Add book</a>
+        <a href="{{ url_for('add_author') }}" class="button">Add author</a>
+    </div>
+    <h1>Search book by ISBN on OpenLibrary</h1>
+    <div class="toolbar">
+        <form method="GET" action="{{ url_for('search_and_add_book') }}">
+            <input type="text" name="isbn" value="{{ search_isbn }}" placeholder="ISBN">
+            <input type="submit" value="Search">
+        </form>
+    </div>
+    {% if search_isbn and not book %}
+        <h2 style="margin-left: 10px;">No book found.</h2>
+    {% endif %}
+    {% if book %}
+        {% if author_in_db %}
+        <div class="book">
+            <p>
+                <strong>{{ book.title }}</strong>, written by {{ book.author_name }}, published in {{ book.publication_year }}.
+            </p>
+            <form action="{{ url_for('search_and_add_book') }}" method="POST">
+                <input type="hidden" name="action" value="add_book">
+                <input type="hidden" name="isbn" value="{{ book.isbn }}">
+                <input type="hidden" name="title" value="{{ book.title }}">
+                <input type="hidden" name="publication_year" value="{{ book.publication_year }}">
+                <input type="hidden" name="author_id" value="{{ author_in_db.author_id }}">
+                <button type="submit" class="button">Add book</button>
+            </form>
+        </div>
+        {% else %}
+        <div class="book">
+            <p><strong>{{ book.author_name }}</strong></p>
+            <form action="{{ url_for('search_and_add_book') }}" method="POST">
+                <input type="hidden" name="action" value="add_author">
+                <input type="hidden" name="name" value="{{ book.author_name }}">
+                <input type="hidden" name="search_isbn" value="{{ search_isbn }}">
+                <button type="submit" class="button">Add author</button>
+            </form>
+        </div>
+        <div class="book">
+            <p>
+                <strong>{{ book.title }}</strong>, written by {{ book.author_name }}, published in {{ book.publication_year }}.
+            </p>
+            <p class="hint">Add author before adding the book.</p>
+        </div>
+        {% endif %}
+    {% endif %}
+  </body>
+</html>
