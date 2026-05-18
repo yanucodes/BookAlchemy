@@ -30,6 +30,9 @@ def _parse_date(value: str) -> date | None:
 
 
 def _authors_default() -> dict:
+    """
+    Return default output for fetch_authors.
+    """
     return {
         "numFound": 0,
         "start": 0,
