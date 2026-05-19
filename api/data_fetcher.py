@@ -45,12 +45,10 @@ def fetch_authors(name: str) -> dict:
         authors.
 
     Raises:
-        RequestException on API failure.
-        TypeError in case of an unexpected API response.
+        ``requests.RequestException`` on API failure.
+        ``TypeError`` in case of an unexpected API response.
     """
-    result = requests.get(API_AUTHORS,
-                              params={"q": name},
-                              timeout=30)
+    result = requests.get(API_AUTHORS, params={"q": name}, timeout=30)
     result.raise_for_status()
     output_data = result.json()
     if not isinstance(output_data, dict):
@@ -59,7 +57,7 @@ def fetch_authors(name: str) -> dict:
     author_docs = output_data.get("docs")
     if not isinstance(author_docs, list):
         raise TypeError("Unexpected API response: 'docs' is not found or is "
-                         "not a list.")
+                        "not a list.")
     for author in author_docs:
         if not isinstance(author, dict):
             logger.warning(
@@ -81,7 +79,7 @@ def fetch_authors(name: str) -> dict:
             continue
         date_of_death = _parse_date(author.get("death_date"))
         new_author = {"name": author_name, "birth_date": birth_date,
-                                "date_of_death": date_of_death}
+                      "date_of_death": date_of_death}
         output_data["authors"].append(new_author)
     return output_data
 
@@ -99,10 +97,10 @@ def fetch_book_by_isbn(isbn: str) -> dict:
         ``author_name`` and ``publication_year``.
 
     Raises:
-        RequestException on API failure.
-        TypeError in case of an unexpected API response (response is not a
-        dict, ``docs`` is missing or not a list, or any entry in ``docs`` is
-        not a dict).
+        ``requests.RequestException`` on API failure.
+        ``TypeError`` in case of an unexpected API response (response is not
+        a dict, ``docs`` is missing or not a list, or any entry in ``docs``
+        is not a dict).
     """
     result = requests.get(API_BOOKS,
                           params={"isbn": isbn},

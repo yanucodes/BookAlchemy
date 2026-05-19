@@ -42,8 +42,8 @@ def _parse_or_400(parsing_function, value, field):
         The converted value.
 
     Raises:
-        HTTPException (400) if ``parsing_function`` raises ``TypeError`` or
-        ``ValueError``.
+        ``HTTPException`` (400) if ``parsing_function`` raises ``TypeError``
+        or ``ValueError``.
     """
     try:
         return parsing_function(value)
@@ -75,8 +75,8 @@ def add_author():
 
     On GET: render the empty form.
     On POST: add the author to the database and render the page in success
-    state,
-    exposing new_author_id for the template to optionally link to add_book.
+    state, exposing ``new_author_id`` for the template to optionally link to
+    ``add_book``.
 
     Returns:
         Rendered add_author.html template.
@@ -215,8 +215,8 @@ def add_book():
     """
     Show the form to add a new book and handle submission.
 
-    On GET: render the empty form. If author_id is passed, preselect that
-    author in the author dropdown.
+    On GET: render the empty form. If ``author_id`` is passed, preselect
+    that author in the author dropdown.
     On POST: add book to the database and render the page in success state.
 
     Returns:
@@ -255,9 +255,9 @@ def sort_books(query, sort: str = 'title', descending: bool = False):
     Sort the books in the given query by the selected column.
 
     Args:
-        query: a Book query to sort.
+        query: a ``Book`` query to sort.
         sort: sorting column.
-        descending: if true, sort books in descending order.
+        descending: if ``True``, sort books in descending order.
 
     Returns:
         Query with books sorted by the selected column.
@@ -279,7 +279,7 @@ def filter_books_by_keyword(query, keyword):
     Filter books by keyword presence in the title or in the author's name.
 
     Args:
-        query: a Book query to filter.
+        query: a ``Book`` query to filter.
         keyword: keyword to search for.
 
     Returns:
