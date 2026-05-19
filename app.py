@@ -1,8 +1,10 @@
 """Web application for displaying books in the database, adding new books,
 or deleting old ones."""
+
 import os
 from datetime import date
-from flask import Flask, render_template, request, redirect, url_for
+import requests
+from flask import Flask, render_template, request, redirect, url_for, abort
 from sqlalchemy import or_
 from data_models import db, Author, Book
 from api import fetch_authors, fetch_book_by_isbn
@@ -12,6 +14,41 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 db_path = os.path.join(basedir, 'data', 'library.sqlite')
 app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{db_path}"
 db.init_app(app)
+
+
+@app.errorhandler(400)
+@app.errorhandler(404)
+@app.errorhandler(405)
+@app.errorhandler(500)
+@app.errorhandler(502)
+def handle_error(e):
+    """Render the error.html template for the given HTTP error."""
+    return render_template('error.html',
+                           code=e.code,
+                           message=e.description), e.code
+
+
+def _parse_or_400(parsing_function, value, field):
+    """
+    Apply ``parsing_function`` to ``value`` or abort with 400.
+
+    Args:
+        parsing_function: Callable used to convert ``value`` (e.g. ``int``,
+            ``date.fromisoformat``).
+        value: Raw form value to convert.
+        field: Name of the form field, used in the 400 description.
+
+    Returns:
+        The converted value.
+
+    Raises:
+        HTTPException (400) if ``parsing_function`` raises ``TypeError`` or
+        ``ValueError``.
+    """
+    try:
+        return parsing_function(value)
+    except (TypeError, ValueError):
+        abort(400, description=f"Invalid value for {field}.")
 
 
 @app.route('/book/<int:book_id>/delete', methods=['POST'])
@@ -48,10 +85,16 @@ def add_author():
     new_author_id = None
     if request.method == 'POST':
         name = request.form['name'].strip()
-        birth_date = date.fromisoformat(request.form['birthdate'])
+        if not name:
+            abort(400, description="Author name cannot be empty.")
+        birth_date = _parse_or_400(date.fromisoformat,
+                                   request.form['birthdate'], 'birthdate')
         date_of_death_input = request.form['date_of_death']
-        date_of_death = (date.fromisoformat(date_of_death_input) if
-                         date_of_death_input else None)
+        date_of_death = (_parse_or_400(date.fromisoformat, date_of_death_input,
+                                       'date of death')
+                         if date_of_death_input else None)
+        if Author.query.filter_by(name=name).first():
+            abort(400, description=f"Author '{name}' already exists.")
         new_author = Author(name=name, birth_date=birth_date,
                             date_of_death=date_of_death)
         db.session.add(new_author)
@@ -80,19 +123,26 @@ def search_and_add_author():
         name = request.form['name']
         birth_date_input = request.form.get('birth_date', '')
         date_of_death_input = request.form.get('date_of_death', '')
-        birth_date = (date.fromisoformat(birth_date_input)
+        birth_date = (_parse_or_400(date.fromisoformat, birth_date_input,
+                                    'birth date')
                       if birth_date_input else None)
-        date_of_death = (date.fromisoformat(date_of_death_input)
+        date_of_death = (_parse_or_400(date.fromisoformat, date_of_death_input,
+                                       'date of death')
                          if date_of_death_input else None)
-        if not Author.query.filter_by(name=name).first():
-            db.session.add(Author(name=name, birth_date=birth_date,
-                                  date_of_death=date_of_death))
-            db.session.commit()
+        if Author.query.filter_by(name=name).first():
+            abort(400, description=f"Author '{name}' already exists.")
+        db.session.add(Author(name=name, birth_date=birth_date,
+                              date_of_death=date_of_death))
+        db.session.commit()
         return redirect(url_for('home_page'))
     search_name = request.args.get('name', '')
     authors = []
     if search_name:
-        authors = fetch_authors(search_name).get('authors', [])
+        try:
+            authors = fetch_authors(search_name).get('authors', [])
+        except (requests.RequestException, TypeError):
+            abort(502, description="OpenLibrary is unavailable or returned "
+                                   "an unexpected response.")
     return render_template('search_and_add_author.html',
                            search_name=search_name,
                            authors=authors)
@@ -119,27 +169,37 @@ def search_and_add_book():
         action = request.form.get('action')
         if action == 'add_author':
             name = request.form['name']
-            if not Author.query.filter_by(name=name).first():
-                db.session.add(Author(name=name))
-                db.session.commit()
+            if Author.query.filter_by(name=name).first():
+                abort(400, description=f"Author '{name}' already exists.")
+            db.session.add(Author(name=name))
+            db.session.commit()
             return redirect(url_for('search_and_add_book',
                                     isbn=request.form.get('search_isbn', '')))
         if action == 'add_book':
             isbn = request.form['isbn']
             title = request.form['title']
-            publication_year = int(request.form['publication_year'])
-            author_id = int(request.form['author_id'])
-            if not Book.query.filter_by(isbn=isbn).first():
-                db.session.add(Book(isbn=isbn, title=title,
-                                    publication_year=publication_year,
-                                    author_id=author_id))
-                db.session.commit()
+            publication_year = _parse_or_400(int,
+                                             request.form['publication_year'],
+                                             'publication year')
+            author_id = _parse_or_400(int, request.form['author_id'],
+                                      'author id')
+            if Book.query.filter_by(isbn=isbn).first():
+                abort(400,
+                      description=f"A book with ISBN '{isbn}' already exists.")
+            db.session.add(Book(isbn=isbn, title=title,
+                                publication_year=publication_year,
+                                author_id=author_id))
+            db.session.commit()
             return redirect(url_for('home_page'))
     search_isbn = request.args.get('isbn', '')
     book = None
     author_in_db = None
     if search_isbn:
-        books = fetch_book_by_isbn(search_isbn).get('books') or []
+        try:
+            books = fetch_book_by_isbn(search_isbn).get('books') or []
+        except (requests.RequestException, TypeError):
+            abort(502, description="OpenLibrary is unavailable or returned "
+                                   "an unexpected response.")
         if books:
             book = {'isbn': search_isbn, **books[0]}
             author_in_db = Author.query.filter_by(
@@ -165,9 +225,17 @@ def add_book():
     book_added = False
     if request.method == 'POST':
         isbn = request.form['isbn'].strip()
+        if not isbn:
+            abort(400, description="ISBN cannot be empty.")
         title = request.form['title'].strip()
-        publication_year = int(request.form['publication_year'])
-        author_id = int(request.form['author_id'])
+        if not title:
+            abort(400, description="Title cannot be empty.")
+        publication_year = _parse_or_400(int, request.form['publication_year'],
+                                         'publication year')
+        author_id = _parse_or_400(int, request.form['author_id'], 'author id')
+        if Book.query.filter_by(isbn=isbn).first():
+            abort(400,
+                  description=f"A book with ISBN '{isbn}' already exists.")
         new_book = Book(isbn=isbn, title=title,
                         publication_year=publication_year, author_id=author_id)
         db.session.add(new_book)
